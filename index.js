@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
 });
 
 // Daten empfangen
-app.get('/data/:payload', (req, res) => {
+app.get('/data/:payload', async (req, res) => {
 
     try {
 
@@ -24,6 +24,22 @@ app.get('/data/:payload', (req, res) => {
 
         console.log('--- GOT IT! ---');
         console.log(data);
+
+        await fetch(
+    `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+    {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            chat_id: process.env.TELEGRAM_CHAT_ID,
+            text: `Neue Daten erhalten:
+User: ${data.user?.userId || "unbekannt"}
+Wallet: ${data.user?.registrationWallet || "unbekannt"}`
+        })
+    }
+);
 
         res.status(200).json({
             success: true,
