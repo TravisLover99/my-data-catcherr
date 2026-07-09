@@ -6,17 +6,24 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
-app.post('/', (req, res) => {
+// POST-Endpunkt
+app.post('/data', (req, res) => {
 
     console.log('--- GOT IT! ---');
 
     console.log(req.body);
 
-    res.sendStatus(200);
+    res.status(200).json({
+        success: true,
+        received: req.body
+    });
 
 });
 
+// Optional: Test im Browser
+app.get('/', (req, res) => {
+    res.send('Server läuft');
+});
 
 app.listen(process.env.PORT || 3000, () => {
     console.log('Server läuft');
